@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change History - EPL Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .filter-input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        .filter-input:focus {
+            border-color: #667eea;
+        }
+
+        .filter-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 24px;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .badge-change {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-azimuth {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .badge-mtilt {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            margin-left: auto;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat {
+            font-size: 1.1em;
+        }
+
+        .stat strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📜 Change History Tracker</h1>
+            <p>View and download all azimuth and mechanical tilt changes</p>
+            
+            <div class="button-container">
+                <a href="/" class="btn">🏠 Dashboard</a>
+                <a href="/site" class="btn">🔍 Site Search</a>
+                <a href="/cell" class="btn">📡 Cell Search</a>
+                <a href="/download/epl" class="btn">📥 Download EPL</a>
+                <a href="/download/history" class="btn download-btn" id="downloadBtn">📥 Download History</a>
+            </div>
+        </div>
+
+        <div class="filter-box">
+            <form method="GET" action="/history">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>🔍 Site ID</label>
+                        <input type="text" name="site_id" class="filter-input" 
+                               placeholder="e.g., cp111" value="{{ site_filter }}">
+                    </div>
+                    <div class="filter-group">
+                        <label>📡 Cell Name</label>
+                        <input type="text" name="cell_name" class="filter-input" 
+                               placeholder="e.g., FCP111A" value="{{ cell_filter }}">
+                    </div>
+                    <div class="filter-group">
+                        <label>👤 Engineer Name</label>
+                        <input type="text" name="engineer" class="filter-input" 
+                               placeholder="e.g., faraz" value="{{ engineer_filter }}">
+                    </div>
+                    <div class="filter-group">
+                        <button type="submit" class="filter-btn">🔍 Apply Filters</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if not history.empty %}
+        <div class="stats">
+            <div class="stat"><strong>📊 Total Changes:</strong> {{ history.shape[0] }}</div>
+            <div class="stat"><strong>🏢 Sites:</strong> {{ history['site_id'].nunique() }}</div>
+            <div class="stat"><strong>📡 Cells:</strong> {{ history['cell_name'].nunique() }}</div>
+            <div class="stat"><strong>👥 Engineers:</strong> {{ history['engineer_name'].nunique() }}</div>
+        </div>
+        {% endif %}
+
+        <div class="table-container">
+            {% if not history.empty %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Site ID</th>
+                        <th>Cell Name</th>
+                        <th>Old Azimuth</th>
+                        <th>New Azimuth</th>
+                        <th>Δ Azimuth</th>
+                        <th>Old MTilt</th>
+                        <th>New MTilt</th>
+                        <th>Δ MTilt</th>
+                        <th>Engineer</th>
+                        <th>Rigger</th>
+                        <th>Date/Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for _, row in history.iterrows() %}
+                    <tr>
+                        <td>{{ row['id'] }}</td>
+                        <td><strong>{{ row['site_id'] }}</strong></td>
+                        <td>{{ row['cell_name'] }}</td>
+                        <td>{{ row['old_azimuth'] }}°</td>
+                        <td style="background: {% if row['old_azimuth'] != row['new_azimuth'] %}#fff3cd{% endif %}">
+                            {{ row['new_azimuth'] }}°
+                        </td>
+                        <td>
+                            {% if row['old_azimuth'] != row['new_azimuth'] %}
+                            <span class="badge-change badge-azimuth">
+                                {{ (row['new_azimuth'] - row['old_azimuth'])|round(1) }}°
+                            </span>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                        <td>{{ row['old_mtilt'] }}°</td>
+                        <td style="background: {% if row['old_mtilt'] != row['new_mtilt'] %}#d4edda{% endif %}">
+                            {{ row['new_mtilt'] }}°
+                        </td>
+                        <td>
+                            {% if row['old_mtilt'] != row['new_mtilt'] %}
+                            <span class="badge-change badge-mtilt">
+                                {{ (row['new_mtilt'] - row['old_mtilt'])|round(1) }}°
+                            </span>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                        <td>{{ row['engineer_name'] }}</td>
+                        <td>{{ row['rigger_name'] if row['rigger_name'] else '-' }}</td>
+                        <td>{{ row['approved_at'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 50px;">
+                <h3>📭 No Change History Found</h3>
+                <p>No records match your filter criteria.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Download with current filters
+        document.getElementById('downloadBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const urlParams = new URLSearchParams(window.location.search);
+            const downloadUrl = '/download/history?' + urlParams.toString();
+            window.location.href = downloadUrl;
+        });
+    </script>
+</body>
+</html>
