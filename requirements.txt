@@ -3,6 +3,6 @@ flask-cors==4.0.0
 gunicorn==21.2.0
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.23
-pandas==2.0.3
+pandas==2.2.3
 openpyxl==3.1.2
 setuptools==81.0.0
